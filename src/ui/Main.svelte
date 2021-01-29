@@ -41,13 +41,18 @@
 <Tabs>
 
   <TabList>
+    <Tab>LVGL</Tab>
     <Tab>Tailwind 2</Tab>
     <Tab>Flutter</Tab>
     <Tab>SwiftUI</Tab>
     <Tab>HTML</Tab>
     <Tab>About</Tab>
   </TabList>
-
+  
+  <TabPanel>
+    <ScreenLVGL on:clipboard={updateClipboard} />
+  </TabPanel>
+  
   <TabPanel>
     <ScreenTailwind on:clipboard={updateClipboard} />
   </TabPanel>
