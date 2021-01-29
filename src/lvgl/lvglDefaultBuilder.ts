@@ -35,7 +35,7 @@ export class LvglDefaultBuilder {
     }
   }
 
-  blend(node: AltSceneNode): this {
+  blend(node: AltSceneNode, parentId: string): this {
     this.style += lvglVisibility(node, this.isJSX);
     this.style += lvglRotation(node, this.isJSX);
     this.style += lvglOpacity(node, this.isJSX);
@@ -77,10 +77,7 @@ export class LvglDefaultBuilder {
       const left = node.x - parentX;
       const top = node.y - parentY;
 
-      this.style += formatWithJSX("left", this.isJSX, left);
-      this.style += formatWithJSX("top", this.isJSX, top);
-
-      this.style += formatWithJSX("position", this.isJSX, "absolute");
+      this.style += "\n    lv_obj_set_pos("+parentId+","+ left + ","+ top + ");\n";
     } else {
       this.style += position;
     }
@@ -90,21 +87,19 @@ export class LvglDefaultBuilder {
 
   customColor(
     paintArray: ReadonlyArray<Paint> | PluginAPI["mixed"],
-    property: "text" | "background-color"
+    property: "text" | "background-color", parentId: string
   ): this {
     const fill = this.retrieveFill(paintArray);
     if (fill.kind === "solid") {
-      this.style += formatWithJSX(property, this.isJSX, fill.prop);
-    } else if (fill.kind === "gradient") {
       if (property === "background-color") {
-        this.style += formatWithJSX("background-image", this.isJSX, fill.prop);
+		 this.style += "\n    lv_style_set_bg_color("+parentId+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
       } else if (property === "text") {
-        this.style += formatWithJSX("background", this.isJSX, fill.prop);
-
-        this.style += formatWithJSX(          "-webkit-background-clip",          this.isJSX,          "text"        );
-
-        this.style += formatWithJSX(          "-webkit-text-fill-color",          this.isJSX,          "transparent"        );
-      }
+		 this.style += "\n    lv_style_set_text_color("+parentId+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+	  }
+    } else if (fill.kind === "gradient") {
+		
+	  this.style += "\n    lv_style_set_bg_grad_color("+parentId+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+	  this.style += "\n    lv_style_set_bg_grad_dir("+parentId+",LV_STATE_DEFAULT,LV_GRAD_DIR_VER);\n";
     }
 
     return this;
@@ -137,17 +132,17 @@ export class LvglDefaultBuilder {
   }
 
   // must be called before Position, because of the hasFixedSize attribute.
-  widthHeight(node: AltSceneNode): this {
+  widthHeight(node: AltSceneNode, parentId: string): this {
     // if current element is relative (therefore, children are absolute)
     // or current element is one of the absoltue children and has a width or height > w/h-64
-    if ("isRelative" in node && node.isRelative === true) {
-      this.style += lvglSize(node, this.isJSX);
-    } else {
-      const partial = lvglSizePartial(node, this.isJSX);
-      this.hasFixedSize = partial[0] !== "" && partial[1] !== "";
 
-      this.style += partial.join("");
+     const partial = lvglSizePartial(node, this.isJSX);
+    if ("isRelative" in node && node.isRelative === true) {
+      //
+    } else {
+      this.hasFixedSize = partial[0] !== "" && partial[1] !== "";
     }
+	this.style += "\n    lv_obj_set_size("+parentId+","+ partial[0] + ","+ partial[1] + ");\n";
     return this;
   }
 

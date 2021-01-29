@@ -151,11 +151,7 @@ export class HtmlTextBuilder extends HtmlDefaultBuilder {
     if (node.textDecoration === "UNDERLINE") {
       this.style += formatWithJSX("text-decoration", this.isJSX, "underline");
     } else if (node.textDecoration === "STRIKETHROUGH") {
-      this.style += formatWithJSX(
-        "text-decoration",
-        this.isJSX,
-        "line-through"
-      );
+      this.style += formatWithJSX(        "text-decoration",        this.isJSX,        "line-through"      );
     }
 
     return this;

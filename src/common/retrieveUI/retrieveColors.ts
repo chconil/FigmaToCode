@@ -12,12 +12,14 @@ import {
   flutterColor,
   flutterGradient,
 } from "./../../flutter/builderImpl/flutterColor";
+
 import { htmlColor, htmlGradient } from "./../../html/builderImpl/htmlColor";
+import { lvglColor, lvglGradient } from "./../../lvgl/builderImpl/lvglColor";
 import { AltSceneNode } from "../../altNodes/altMixins";
 import { rgbTo6hex } from "../../common/color";
 import { notEmpty } from "../../altNodes/altConversion";
 
-type exportFramework = "flutter" | "swiftui" | "html" | "tailwind";
+type exportFramework = "flutter" | "swiftui" | "html" | "tailwind" | "lvgl";
 
 // For Tailwind, show the name and don't show the contrast.
 type exportSolidColor = {
@@ -103,6 +105,8 @@ const convertSolidColor = (
             };
           } else if (framework === "html") {
             exported = htmlColor(fill.color, opacity);
+          } else if (framework === "lvgl") {
+            exported = lvglColor(fill.color, opacity);
           } else if (framework === "tailwind") {
             const kind = nodeType === "TEXT" ? "text" : "bg";
             exported = tailwindSolidColor(fill, kind);
@@ -217,6 +221,9 @@ const convertGradient = (
               break;
             case "swiftui":
               exported = swiftuiGradient(fill);
+              break;
+			case "lvgl":
+              exported = lvglGradient(fill);
               break;
           }
 

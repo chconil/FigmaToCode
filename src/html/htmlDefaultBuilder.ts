@@ -53,11 +53,7 @@ export class HtmlDefaultBuilder {
 
         // Gradient requires these.
         this.style += formatWithJSX("border-image-slice", this.isJSX, 1);
-        this.style += formatWithJSX(
-          "border-image-source",
-          this.isJSX,
-          fill.prop
-        );
+        this.style += formatWithJSX(          "border-image-source",          this.isJSX,          fill.prop        );
       } else {
         const border = `${weight}px solid ${fill.prop}`;
 
@@ -105,17 +101,9 @@ export class HtmlDefaultBuilder {
       } else if (property === "text") {
         this.style += formatWithJSX("background", this.isJSX, fill.prop);
 
-        this.style += formatWithJSX(
-          "-webkit-background-clip",
-          this.isJSX,
-          "text"
-        );
+        this.style += formatWithJSX(          "-webkit-background-clip",          this.isJSX,          "text"        );
 
-        this.style += formatWithJSX(
-          "-webkit-text-fill-color",
-          this.isJSX,
-          "transparent"
-        );
+        this.style += formatWithJSX(          "-webkit-text-fill-color",          this.isJSX,          "transparent"        );
       }
     }
 

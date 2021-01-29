@@ -47,10 +47,7 @@ export const htmlRotation = (node: AltLayoutMixin, isJsx: boolean): string => {
   // that's how you convert angles to clockwise radians: angle * -pi/180
   // using 3.14159 as Pi for enough precision and to avoid importing math lib.
   if (node.rotation !== undefined && Math.round(node.rotation) !== 0) {
-    return formatWithJSX(
-      "transform",
-      isJsx,
-      `rotate(${numToAutoFixed(node.rotation)}deg)`
+    return formatWithJSX(      "transform",      isJsx,      `rotate(${numToAutoFixed(node.rotation)}deg)`
     );
   }
   return "";

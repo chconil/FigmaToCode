@@ -14,7 +14,7 @@ export const retrieveTailwindText = (
   selectedText.forEach((node) => {
     if (node.type === "TEXT") {
       const attr = new LvglTextBuilder(node, false, false)
-        .blend(node)
+        .blend(node, node.parent?.id ?? "")
         .position(node, node.parent?.id ?? "")
         .textAutoSize(node)
         .fontStyle(node)
@@ -22,7 +22,7 @@ export const retrieveTailwindText = (
         .lineHeight(node)
         .textDecoration(node)
         .textAlign(node)
-        .customColor(node.fills, "text")
+        .customColor(node.fills, "text", node.parent?.id ?? "")
         .textTransform(node)
         .removeTrailingSpace();
 

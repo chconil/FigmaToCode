@@ -27,6 +27,7 @@
   import ScreenFlutter from "./ScreenFlutter.svelte";
   import ScreenSwiftUI from "./ScreenSwiftUI.svelte";
   import ScreenHTML from "./ScreenHtml.svelte";
+  import ScreenLVGL from "./ScreenLVGL.svelte";
   import ScreenAbout from "./ScreenAbout.svelte";
 
   import { GlobalCSS } from "figma-plugin-ds-svelte";

@@ -14,16 +14,16 @@ export const lvglSizePartial = (
 
   let w = "";
   if (typeof size.width === "number") {
-    w += formatWithJSX("width", isJsx, size.width);
+    w = ""+size.width;
   } else if (size.width === "full") {
-    w += formatWithJSX("width", isJsx, "100%");
+    w ="100%";
   }
 
   let h = "";
   if (typeof size.height === "number") {
-    h += formatWithJSX("height", isJsx, size.height);
+    h = ""+size.height;
   } else if (typeof size.height === "string") {
-    h += formatWithJSX("height", isJsx, "100%");
+    h = "100%";
   }
 
   return [w, h];

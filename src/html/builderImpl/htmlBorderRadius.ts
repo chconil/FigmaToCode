@@ -29,32 +29,16 @@ export const htmlBorderRadius = (
   } else {
     // todo optimize for tr/tl/br/bl instead of t/r/l/b
     if (node.topLeftRadius !== 0) {
-      comp += formatWithJSX(
-        "border-top-left-radius",
-        isJsx,
-        node.topLeftRadius
-      );
+      comp += formatWithJSX(        "border-top-left-radius",        isJsx,        node.topLeftRadius      );
     }
     if (node.topRightRadius !== 0) {
-      comp += formatWithJSX(
-        "border-top-right-radius",
-        isJsx,
-        node.topRightRadius
-      );
+      comp += formatWithJSX(        "border-top-right-radius",        isJsx,        node.topRightRadius      );
     }
     if (node.bottomLeftRadius !== 0) {
-      comp += formatWithJSX(
-        "border-bottom-left-radius",
-        isJsx,
-        node.bottomLeftRadius
-      );
+      comp += formatWithJSX(        "border-bottom-left-radius",        isJsx,        node.bottomLeftRadius      );
     }
     if (node.bottomRightRadius !== 0) {
-      comp += formatWithJSX(
-        "border-bottom-right-radius",
-        isJsx,
-        node.bottomRightRadius
-      );
+      comp += formatWithJSX(        "border-bottom-right-radius",        isJsx,        node.bottomRightRadius      );
     }
   }
 

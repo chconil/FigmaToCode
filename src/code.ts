@@ -4,6 +4,7 @@ import {
   retrieveGenericSolidUIColors,
 } from "./common/retrieveUI/retrieveColors";
 import { htmlMain } from "./html/htmlMain";
+import { lvglMain } from "./lvgl/lvglMain";
 import { swiftuiMain } from "./swiftui/swiftuiMain";
 import { tailwindMain } from "./tailwind/tailwindMain";
 import { flutterMain } from "./flutter/flutterMain";
@@ -14,9 +15,9 @@ let isJsx = false;
 let layerName = false;
 let material = true;
 
-let mode: "flutter" | "swiftui" | "html" | "tailwind";
+let mode: "flutter" | "swiftui" | "html" | "tailwind" | "lvgl";
 
-figma.showUI(__html__, { width: 450, height: 550 });
+figma.showUI(__html__, { width: 800, height: 900 });
 
 const run = () => {
   // ignore when nothing was selected
@@ -48,6 +49,8 @@ const run = () => {
     result = swiftuiMain(convertedSelection, parentId);
   } else if (mode === "html") {
     result = htmlMain(convertedSelection, parentId, isJsx, layerName);
+  } else if (mode === "lvgl") {
+    result = lvglMain(convertedSelection, parentId, isJsx, layerName);
   }
 
   console.log(result);
@@ -61,7 +64,8 @@ const run = () => {
     mode === "tailwind" ||
     mode === "flutter" ||
     mode === "html" ||
-    mode === "swiftui"
+    mode === "swiftui" ||
+    mode === "lvgl" 
   ) {
     figma.ui.postMessage({
       type: "colors",
@@ -92,7 +96,8 @@ figma.ui.onmessage = (msg) => {
     msg.type === "tailwind" ||
     msg.type === "flutter" ||
     msg.type === "swiftui" ||
-    msg.type === "html"
+    msg.type === "html"||
+    msg.type === "lvgl"
   ) {
     mode = msg.type;
     run();

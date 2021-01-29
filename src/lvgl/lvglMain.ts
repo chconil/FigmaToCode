@@ -78,8 +78,8 @@ const lvglGroup = (node: AltGroupNode, isJsx: boolean = false): string => {
 
   // this needs to be called after CustomNode because widthHeight depends on it
   const builder = new LvglDefaultBuilder(node, showLayerName, isJsx)
-    .blend(node)
-    .widthHeight(node)
+    .blend(node, parentId)
+    .widthHeight(node, parentId)
     .position(node, parentId);
 
   if (builder.style) {
@@ -98,7 +98,7 @@ const lvglText = (
   // follow the website order, to make it easier
 
   const builderResult = new LvglTextBuilder(node, showLayerName, isJsx)
-    .blend(node)
+    .blend(node, parentId)
     .textAutoSize(node)
     .position(node, parentId)
     // todo fontFamily (via node.fontName !== figma.mixed ? `fontFamily: ${node.fontName.family}`)
@@ -110,7 +110,7 @@ const lvglText = (
     .textDecoration(node)
     // todo text lists (<li>)
     .textAlign(node)
-    .customColor(node.fills, "text")
+    .customColor(node.fills, "text", parentId)
     .textTransform(node);
 
   const splittedChars = node.characters.split("\n");
@@ -174,11 +174,11 @@ export const lvglContainer = (
   }
 
   const builder = new LvglDefaultBuilder(node, showLayerName, isJsx)
-    .blend(node)
+    .blend(node, parentId)
     .autoLayoutPadding(node)
-    .widthHeight(node)
+    .widthHeight(node, parentId)
     .position(node, parentId)
-    .customColor(node.fills, "background-color")
+    .customColor(node.fills, "background-color", parentId)
     // TODO image and gradient support (tailwind does not support gradients)
     .shadow(node)
     .border(node);
