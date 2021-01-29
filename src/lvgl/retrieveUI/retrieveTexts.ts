@@ -22,7 +22,7 @@ export const retrieveTailwindText = (
         .lineHeight(node)
         .textDecoration(node)
         .textAlign(node)
-        .customColor(node.fills, "text", node.parent?.id ?? "")
+        .customColor(node,node.fills, "text", node.parent?.id ?? "")
         .textTransform(node)
         .removeTrailingSpace();
 

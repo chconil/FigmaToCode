@@ -77,7 +77,7 @@ export class LvglDefaultBuilder {
       const left = node.x - parentX;
       const top = node.y - parentY;
 
-      this.style += "\n    lv_obj_set_pos("+parentId+","+ left + ","+ top + ");\n";
+      this.style += "    lv_obj_set_pos("+node.id+","+ left + ","+ top + ");\n";
     } else {
       this.style += position;
     }
@@ -85,21 +85,21 @@ export class LvglDefaultBuilder {
     return this;
   }
 
-  customColor(
+  customColor(node: AltSceneNode,
     paintArray: ReadonlyArray<Paint> | PluginAPI["mixed"],
     property: "text" | "background-color", parentId: string
   ): this {
     const fill = this.retrieveFill(paintArray);
     if (fill.kind === "solid") {
       if (property === "background-color") {
-		 this.style += "\n    lv_style_set_bg_color("+parentId+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+		 this.style += "    lv_style_set_bg_color("+node.id+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
       } else if (property === "text") {
-		 this.style += "\n    lv_style_set_text_color("+parentId+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+		 this.style += "    lv_style_set_text_color("+node.id+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
 	  }
     } else if (fill.kind === "gradient") {
 		
-	  this.style += "\n    lv_style_set_bg_grad_color("+parentId+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
-	  this.style += "\n    lv_style_set_bg_grad_dir("+parentId+",LV_STATE_DEFAULT,LV_GRAD_DIR_VER);\n";
+	  this.style += "    lv_style_set_bg_grad_color("+node.id+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+	  this.style += "    lv_style_set_bg_grad_dir("+node.id+",LV_STATE_DEFAULT,LV_GRAD_DIR_VER);\n";
     }
 
     return this;
@@ -142,7 +142,7 @@ export class LvglDefaultBuilder {
     } else {
       this.hasFixedSize = partial[0] !== "" && partial[1] !== "";
     }
-	this.style += "\n    lv_obj_set_size("+parentId+","+ partial[0] + ","+ partial[1] + ");\n";
+	this.style += "    lv_obj_set_size("+node.id+","+ partial[0] + ","+ partial[1] + ");\n";
     return this;
   }
 
@@ -162,13 +162,6 @@ export class LvglDefaultBuilder {
     this.style += additionalStyle;
     this.removeTrailingSpace();
 
-    if (this.style) {
-      if (this.isJSX) {
-        this.style = ` style={{${this.style}}}`;
-      } else {
-        this.style = ` style="${this.style}"`;
-      }
-    }
     if (this.name.length > 0) {
       const classOrClassName = this.isJSX ? "className" : "class";
       return ` ${classOrClassName}="${this.name}"${this.style}`;

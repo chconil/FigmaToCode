@@ -84,7 +84,7 @@ const lvglGroup = (node: AltGroupNode, isJsx: boolean = false): string => {
 
   if (builder.style) {
     const attr = builder.build(formatWithJSX("position", isJsx, "relative"));
-    return `\n<div${attr}>${lvglWidgetGenerator(node.children, isJsx)}</div>`;
+    return "\n" +node.id + "=lv_obj_create_A("+node.parent?.id+",NULL);\n" + attr+ " \n My childrens:\n " + lvglWidgetGenerator(node.children, isJsx) + "FINNNNN";
   }
 
   return lvglWidgetGenerator(node.children, isJsx);
@@ -110,7 +110,7 @@ const lvglText = (
     .textDecoration(node)
     // todo text lists (<li>)
     .textAlign(node)
-    .customColor(node.fills, "text", parentId)
+    .customColor(node,node.fills, "text", parentId)
     .textTransform(node);
 
   const splittedChars = node.characters.split("\n");
@@ -178,7 +178,7 @@ export const lvglContainer = (
     .autoLayoutPadding(node)
     .widthHeight(node, parentId)
     .position(node, parentId)
-    .customColor(node.fills, "background-color", parentId)
+    .customColor(node,node.fills, "background-color", parentId)
     // TODO image and gradient support (tailwind does not support gradients)
     .shadow(node)
     .border(node);
@@ -188,7 +188,7 @@ export const lvglContainer = (
   }
 
   if (builder.style || additionalStyle) {
-    return `\n<div${builder.build(additionalStyle)}>${children}</div>`;
+	return "\n" +node.id + "=lv_obj_create_B("+node.parent?.id+",NULL);\n" + builder.build(additionalStyle)+ " \nMy childrens:\n" + children + "FINNNNN";
   }
 
   return children;
@@ -291,7 +291,8 @@ const addSpacingIfNeeded = (
       const style = new LvglDefaultBuilder(node, false, isJsx).build(
         formatWithJSX(wh, isJsx, node.parent.itemSpacing)
       );
-      return `\n<div${style}></div>`;
+	  return "\n" +node.id + "=lv_obj_create_C("+node.parent?.id+",NULL);\n" + style + "FINNNNN";
+ 
     }
   }
   return "";
