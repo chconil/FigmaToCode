@@ -11,9 +11,10 @@ import {
   lvglRotation,
   lvglOpacity,
 } from "./builderImpl/lvglBlend";
-import { lvglPosition } from "./builderImpl/lvglPosition";
+
 import { lvglColorFromFills, lvglGradientFromFills } from "./builderImpl/lvglColor";
 import { lvglPadding } from "./builderImpl/lvglPadding";
+import { objectName } from "./builderImpl/lvglObjectName";
 import { formatWithJSX } from "../common/parseJSX";
 import { parentCoordinates } from "../common/parentCoordinates";
 import { lvglSize, lvglSizePartial } from "./builderImpl/lvglSize";
@@ -67,20 +68,16 @@ export class LvglDefaultBuilder {
   }
 
   position(node: AltSceneNode, parentId: string): this {
-    const position = lvglPosition(node, parentId);
-
-    if (position === "absoluteManualLayout" && node.parent) {
+     if (node.parent && node.parent.isRelative === true) {
       // tailwind can't deal with absolute layouts.
 
       const [parentX, parentY] = parentCoordinates(node.parent);
 
       const left = node.x - parentX;
       const top = node.y - parentY;
-
-      this.style += "    lv_obj_set_pos("+node.id+","+ left + ","+ top + ");\n";
-    } else {
-      this.style += position;
-    }
+	  
+      this.style += "    lv_obj_set_pos("+objectName(node.id)+","+ left + ","+ top + ");\n";
+    } 
 
     return this;
   }
@@ -92,14 +89,14 @@ export class LvglDefaultBuilder {
     const fill = this.retrieveFill(paintArray);
     if (fill.kind === "solid") {
       if (property === "background-color") {
-		 this.style += "    lv_style_set_bg_color("+node.id+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+		 this.style += "    lv_style_set_bg_color("+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
       } else if (property === "text") {
-		 this.style += "    lv_style_set_text_color("+node.id+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+		 this.style += "    lv_style_set_text_color("+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
 	  }
     } else if (fill.kind === "gradient") {
 		
-	  this.style += "    lv_style_set_bg_grad_color("+node.id+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
-	  this.style += "    lv_style_set_bg_grad_dir("+node.id+",LV_STATE_DEFAULT,LV_GRAD_DIR_VER);\n";
+	  this.style += "    lv_style_set_bg_grad_color("+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+	  this.style += "    lv_style_set_bg_grad_dir("+objectName(node.id)+",LV_STATE_DEFAULT,LV_GRAD_DIR_VER);\n";
     }
 
     return this;
@@ -142,7 +139,13 @@ export class LvglDefaultBuilder {
     } else {
       this.hasFixedSize = partial[0] !== "" && partial[1] !== "";
     }
-	this.style += "    lv_obj_set_size("+node.id+","+ partial[0] + ","+ partial[1] + ");\n";
+	if( partial[0] == ""){
+		this.style += "    lv_obj_set_height("+objectName(node.id)+","+ partial[1] + ");\n";
+	} else if  (partial[1] == ""){
+		this.style += "    lv_obj_set_width("+objectName(node.id)+","+ partial[0]+ ");\n";
+	} else {
+		this.style += "    lv_obj_set_size("+objectName(node.id)+","+ partial[0] + ","+ partial[1] + ");\n";
+	}
     return this;
   }
 

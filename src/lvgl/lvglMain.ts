@@ -7,6 +7,7 @@ import {
   AltGroupNode,
 } from "../altNodes/altMixins";
 import { LvglTextBuilder } from "./lvglTextBuilder";
+import { objectName } from "./builderImpl/lvglObjectName";
 import { LvglDefaultBuilder as LvglDefaultBuilder } from "./lvglDefaultBuilder";
 import { formatWithJSX } from "../common/parseJSX";
 
@@ -84,7 +85,7 @@ const lvglGroup = (node: AltGroupNode, isJsx: boolean = false): string => {
 
   if (builder.style) {
     const attr = builder.build(formatWithJSX("position", isJsx, "relative"));
-    return "\n" +node.id + "=lv_obj_create_A("+node.parent?.id+",NULL);\n" + attr+ " \n My childrens:\n " + lvglWidgetGenerator(node.children, isJsx) + "FINNNNN";
+    return "\nlv_obj_t *" +objectName(node.id) + "=lv_obj_create_A("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + attr+ " \n My childrens:\n " + lvglWidgetGenerator(node.children, isJsx) + "FINNNNN";
   }
 
   return lvglWidgetGenerator(node.children, isJsx);
@@ -188,7 +189,9 @@ export const lvglContainer = (
   }
 
   if (builder.style || additionalStyle) {
-	return "\n" +node.id + "=lv_obj_create_B("+node.parent?.id+",NULL);\n" + builder.build(additionalStyle)+ " \nMy childrens:\n" + children + "FINNNNN";
+	return "\nlv_obj_t *" +objectName(node.id) + "=lv_cont_create("+
+	(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" +
+	builder.build(additionalStyle)+ "\n" + children;
   }
 
   return children;
@@ -206,73 +209,50 @@ export const rowColumnProps = (node: AltFrameNode, isJsx: boolean): string => {
     return "";
   }
 
-  // [optimization]
-  // flex, by default, has flex-row. Therefore, it can be omitted.
-  const rowOrColumn =
-    node.layoutMode === "HORIZONTAL"
-      ? formatWithJSX("flex-direction", isJsx, "row")
-      : formatWithJSX("flex-direction", isJsx, "column");
-
-  // special case when there is only one children; need to position correctly in Flex.
-  // let justify = "justify-center";
-  // if (node.children.length === 1) {
-  //   const nodeCenteredPosX = node.children[0].x + node.children[0].width / 2;
-  //   const parentCenteredPosX = node.width / 2;
-
-  //   const marginX = nodeCenteredPosX - parentCenteredPosX;
-
-  //   // allow a small threshold
-  //   if (marginX < -4) {
-  //     justify = "justify-start";
-  //   } else if (marginX > 4) {
-  //     justify = "justify-end";
-  //   }
-  // }
-  let primaryAlign: string;
+  let layoutString = "\n    lv_cont_set_layout("+objectName(node.id)+",";
+  
+  //WARNING: ALl of this is VERY PROBABLY WRONG!!! Diff with HTML!
+  
+  layoutString+= (node.primaryAxisAlignItems=="SPACE_BETWEEN"?"LV_LAYOUT_PRETTY_MID"
+  :(node.layoutMode === "HORIZONTAL"? "LV_LAYOUT_ROW_": "LV_LAYOUT_COLUMN_"));
 
   switch (node.primaryAxisAlignItems) {
     case "MIN":
-      primaryAlign = "flex-start";
+      layoutString+=(node.layoutMode === "HORIZONTAL"?"LEFT":"TOP");
       break;
     case "CENTER":
-      primaryAlign = "center";
+       layoutString+="MID";
       break;
     case "MAX":
-      primaryAlign = "flex-end";
+       layoutString+=(node.layoutMode === "HORIZONTAL"?"RIGHT":"BOTTOM");;
       break;
-    case "SPACE_BETWEEN":
-      primaryAlign = "justify-between";
+    //case "SPACE_BETWEEN":
+      //primaryAlign = "justify-between";
+	  
       break;
   }
-  primaryAlign = formatWithJSX("justify-content", isJsx, primaryAlign);
+  layoutString+=");";
 
   // [optimization]
   // when all children are STRETCH and layout is Vertical, align won't matter. Otherwise, center it.
-  let counterAlign: string;
-  switch (node.counterAxisAlignItems) {
-    case "MIN":
-      counterAlign = "flex-start";
-      break;
-    case "CENTER":
-      counterAlign = "center";
-      break;
-    case "MAX":
-      counterAlign = "flex-end";
-      break;
-  }
-  counterAlign = formatWithJSX("align-items", isJsx, counterAlign);
+ // let counterAlign: string;
+  ///switch (node.counterAxisAlignItems) {
+   // case "MIN":
+   //   counterAlign = "flex-start";
+   //   break;
+   // case "CENTER":
+   //   counterAlign = "center";
+   //   break;
+  //  case "MAX":
+   //   counterAlign = "flex-end";
+  //    break;
+  //}
+  //counterAlign = formatWithJSX("align-items", isJsx, counterAlign);
 
   // if parent is a Frame with AutoLayout set to Vertical, the current node should expand
-  let flex =
-    node.parent &&
-    "layoutMode" in node.parent &&
-    node.parent.layoutMode === node.layoutMode
-      ? "flex"
-      : "inline-flex";
 
-  flex = formatWithJSX("display", isJsx, flex);
 
-  return `${flex}${rowOrColumn}${counterAlign}${primaryAlign}`;
+  return layoutString;
 };
 
 const addSpacingIfNeeded = (
@@ -291,7 +271,7 @@ const addSpacingIfNeeded = (
       const style = new LvglDefaultBuilder(node, false, isJsx).build(
         formatWithJSX(wh, isJsx, node.parent.itemSpacing)
       );
-	  return "\n" +node.id + "=lv_obj_create_C("+node.parent?.id+",NULL);\n" + style + "FINNNNN";
+	  return "\nlv_obj_t * " +objectName(node.id) + "=lv_obj_create_C("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + style + "FINNNNN";
  
     }
   }
