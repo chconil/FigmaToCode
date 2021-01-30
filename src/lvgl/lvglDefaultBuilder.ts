@@ -5,6 +5,7 @@ import {
   AltBlendMixin,
   AltFrameMixin,
   AltDefaultShapeMixin,
+  AltFrameNode,AltRectangleNode,AltEllipseNode 
 } from "../altNodes/altMixins";
 import {
   lvglVisibility,
@@ -149,7 +150,7 @@ export class LvglDefaultBuilder {
     return this;
   }
 
-  autoLayoutPadding(node: AltFrameMixin | AltDefaultShapeMixin): this {
+  autoLayoutPadding(node: AltFrameNode | AltRectangleNode | AltEllipseNode): this {
     this.style += lvglPadding(node, this.isJSX);
     return this;
   }

@@ -15,15 +15,9 @@ export const retrieveTailwindText = (
     if (node.type === "TEXT") {
       const attr = new LvglTextBuilder(node, false, false)
         .blend(node, node.parent?.id ?? "")
+		.textAutoFormat(node)
         .position(node, node.parent?.id ?? "")
-        .textAutoSize(node)
-        .fontStyle(node)
-        .letterSpacing(node)
-        .lineHeight(node)
-        .textDecoration(node)
-        .textAlign(node)
         .customColor(node,node.fills, "text", node.parent?.id ?? "")
-        .textTransform(node)
         .removeTrailingSpace();
 
       const splittedChars = node.characters.split("\n");

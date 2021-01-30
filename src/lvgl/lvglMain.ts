@@ -98,21 +98,13 @@ const lvglText = (
 ): string | [string, string] => {
   // follow the website order, to make it easier
 
-  const builderResult = new LvglTextBuilder(node, showLayerName, isJsx)
+  var builderResult = new LvglTextBuilder(node, showLayerName, isJsx)
     .blend(node, parentId)
-    .textAutoSize(node)
+	.textAutoFormat(node)
     .position(node, parentId)
-    // todo fontFamily (via node.fontName !== figma.mixed ? `fontFamily: ${node.fontName.family}`)
-    // todo font smoothing
-    .fontSize(node)
-    .fontStyle(node)
-    .letterSpacing(node)
-    .lineHeight(node)
-    .textDecoration(node)
-    // todo text lists (<li>)
-    .textAlign(node)
-    .customColor(node,node.fills, "text", parentId)
-    .textTransform(node);
+    .customColor(node,node.fills, "text", parentId);
+
+
 
   const splittedChars = node.characters.split("\n");
   const charsWithLineBreak =
