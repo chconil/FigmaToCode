@@ -151,12 +151,15 @@ export class LvglDefaultBuilder {
     return this;
   }
 
-  build(additionalStyle: string = ""): string {
+  build(node: AltSceneNode, additionalStyle: string = ""): string {
     this.style += additionalStyle;
     this.removeTrailingSpace();
-
+	if(this.style.includes("style_")){
+		this.style="\n    static lv_style_t style_"+objectName(node.id)+";"+this.style;
+	}
     if (this.name.length > 0) {
       const classOrClassName = this.isJSX ? "className" : "class";
+
       return ` ${classOrClassName}="${this.name}"${this.style}`;
     } else {
       return this.style;

@@ -4,7 +4,7 @@
 
   import Prism from "svelte-prism";
   import "prism-theme-night-owl";
-
+  import "prismjs/components/prism-c";
   let codeData = "";
   let emptySelection = false;
 
@@ -130,7 +130,7 @@
         </button>
       </div>
 
-      <Prism language="html" source={codeObservable} />
+      <Prism language="c" source={codeObservable} />
 
       <div
         class="flex items-center content-center justify-end mx-2 mb-2 space-x-8">

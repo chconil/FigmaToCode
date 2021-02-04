@@ -95,7 +95,7 @@ export class LvglTextBuilder extends LvglDefaultBuilder {
     }
 	
 	if(myStyle != ""){
-		  this.style =  this.style +  "\n    static lv_style_t style_"+objectName(node.id)+";" + myStyle;
+		  this.style =  this.style + myStyle;
 	}	
 
     return this;

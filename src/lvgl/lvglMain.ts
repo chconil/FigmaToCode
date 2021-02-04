@@ -103,17 +103,11 @@ const lvglText = (
     .customColor(node,node.fills, "text", parentId);
 
 
-
-  const splittedChars = node.characters.split("\n");
-  const charsWithLineBreak =
-    splittedChars.length > 1
-      ? node.characters.split("\n").join("<br/>")
-      : node.characters;
-
   if (isInput) {
-    return [builderResult.style, charsWithLineBreak];
+    return [builderResult.style, node.characters];
   } else {
-    return `\n<p${builderResult.build()}>${charsWithLineBreak}</p>`;
+	  
+	return "\n     lv_label_set_text("+objectName(node.id)+",\""+node.characters+"\");" + builderResult.build(node,"");
   }
 };
 
@@ -175,13 +169,15 @@ export const lvglContainer = (
     .border(node);
 
   if (isInput) {
-    return `\n<input${builder.build(additionalStyle)}>${children}</input>`;
+	return "\nlv_obj_t * " +objectName(node.id) + " = lv_textarea_create("+
+	(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" +
+	builder.build(node,additionalStyle)+ "\n" + children;
   }
 
   if (builder.style || additionalStyle) {
 	return "\nlv_obj_t *" +objectName(node.id) + "=lv_cont_create("+
 	(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" +
-	builder.build(additionalStyle)+ "\n" + children;
+	builder.build(node,additionalStyle)+ "\n" + children;
   }
 
   return children;
@@ -258,10 +254,10 @@ const addSpacingIfNeeded = (
       const wh = node.parent.layoutMode === "HORIZONTAL" ? "width" : "height";
 
       // don't show the layer name in these separators.
-      var style = new LvglDefaultBuilder(node, false, isJsx).build("");
-	  style+="\n    lv_obj_set_"+wh+"("+objectName(node.id)+","+ node.parent.itemSpacing+ "); // Spacing !";
+      var style = new LvglDefaultBuilder(node, false, isJsx).build(node,"");
+	  style+="\n    lv_obj_set_"+wh+"("+objectName(node.id)+","+ node.parent.itemSpacing+ "); // Spacing object?";
 
-	  return "\nlv_obj_t * " +objectName(node.id) + "=lv_obj_create_C("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + style + "FINNNNN";
+	  return "\nlv_obj_t * " +objectName(node.id) + "=lv_obj_create_C("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + style;
  
     }
   }

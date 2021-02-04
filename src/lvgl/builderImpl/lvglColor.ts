@@ -25,14 +25,14 @@ export const lvglColor = (color: RGB, alpha: number = 1): string => {
   const a = numToAutoFixed(alpha ?? 1);
 
   if (color.r === 1 && color.g === 1 && color.b === 1 && alpha === 1) {
-    return "white";
+    return "LV_COLOR_WHITE";
   }
 
   if (color.r === 0 && color.g === 0 && color.b === 0 && alpha === 1) {
-    return "black";
+    return "LV_COLOR_BLACK";
   }
 
-  return `rgba(${r}, ${g}, ${b}, ${a})`;
+  return "LV_COLOR_RGBA_${r}_${g}_${b}_${a}";
 };
 
 export const lvglGradientFromFills = (
