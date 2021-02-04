@@ -1,4 +1,3 @@
-import { formatWithJSX } from "./../../common/parseJSX";
 import { numToAutoFixed } from "../../common/numToAutoFixed";
 import { AltFrameMixin, AltDefaultShapeMixin,AltSceneNode,AltFrameNode,AltRectangleNode,AltEllipseNode } from "../../altNodes/altMixins";
 import { commonPadding } from "../../common/commonPadding";

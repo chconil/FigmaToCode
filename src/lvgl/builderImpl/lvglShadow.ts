@@ -1,11 +1,11 @@
 import { lvglColor } from "./lvglColor";
-import { AltBlendMixin } from "../../altNodes/altMixins";
-
+import { AltSceneNode } from "../../altNodes/altMixins";
+import { objectName } from "./lvglObjectName";
 /**
  * https://tailwindcss.com/docs/box-shadow/
  * example: shadow
  */
-export const lvglShadow = (node: AltBlendMixin): string => {
+export const lvglShadow = (node: AltSceneNode): string => {
   // [when testing] node.effects can be undefined
   if (node.effects && node.effects.length > 0) {
     const dropShadow = node.effects.filter(
@@ -16,14 +16,14 @@ export const lvglShadow = (node: AltBlendMixin): string => {
     // simple shadow from tailwind
     if (dropShadow.length > 0) {
       const shadow = dropShadow[0];
-      const x = shadow.offset.x;
-      const y = shadow.offset.y;
-      const color = lvglColor(shadow.color, shadow.color.a);
-      const blur = shadow.radius;
-      const spread = shadow.spread ? `${shadow.spread}px ` : "";
-      const inner = shadow.type === "INNER_SHADOW" ? " inset" : "";
 
-      return `${x}px ${y}px ${blur}px ${spread}${color}${inner}`;
+	  var style = "\n    lv_style_set_shadow_spread(&style_"+objectName(node.id)+",LV_STATE_DEFAULT,"+ shadow.spread + ");";
+    style += "\n    lv_style_set_shadow_width(&style_"+objectName(node.id)+", LV_STATE_DEFAULT,"+ shadow.radius + ");";
+    style += "\n    lv_style_set_shadow_color(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, "+lvglColor(shadow.color, shadow.color.a)+");";
+    style += "\n    lv_style_set_shadow_ofs_x(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, "+shadow.offset.x+");";
+    style += "\n    lv_style_set_shadow_ofs_y(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, "+shadow.offset.y+");";
+
+      return style;
     }
   }
   return "";

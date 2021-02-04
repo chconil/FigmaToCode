@@ -16,7 +16,6 @@ import {
 import { lvglColorFromFills, lvglGradientFromFills } from "./builderImpl/lvglColor";
 import { lvglPadding } from "./builderImpl/lvglPadding";
 import { objectName } from "./builderImpl/lvglObjectName";
-import { formatWithJSX } from "../common/parseJSX";
 import { parentCoordinates } from "../common/parentCoordinates";
 import { lvglSize, lvglSizePartial } from "./builderImpl/lvglSize";
 
@@ -51,20 +50,11 @@ export class LvglDefaultBuilder {
       const weight = node.strokeWeight;
 
       if (fill.kind === "gradient") {
-        this.style += formatWithJSX("border", this.isJSX, `${weight}px solid`);
-
-        // Gradient requires these.
-        this.style += formatWithJSX("border-image-slice", this.isJSX, 1);
-        this.style += formatWithJSX(          "border-image-source",          this.isJSX,          fill.prop        );
-      } else {
-        const border = `${weight}px solid ${fill.prop}`;
-
-        // use "2px solid white" instead of splitting into three properties.
-        // This pattern seems more common than using border, borderColor and borderWidth.
-        this.style += formatWithJSX("border", this.isJSX, border);
+		  this.style += "\n    // Warning, gradient border not supported";
       }
+	  this.style += "\n    lv_style_set_border_color(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, "+fill.prop+"); ";
+	  this.style += "\n    lv_style_set_border_width(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, "+weight+");"; 
     }
-
     return this;
   }
 
@@ -77,7 +67,7 @@ export class LvglDefaultBuilder {
       const left = node.x - parentX;
       const top = node.y - parentY;
 	  
-      this.style += "    lv_obj_set_pos("+objectName(node.id)+","+ left + ","+ top + ");\n";
+      this.style += "\n    lv_obj_set_pos("+objectName(node.id)+","+ left + ","+ top + ");";
     } 
 
     return this;
@@ -90,14 +80,14 @@ export class LvglDefaultBuilder {
     const fill = this.retrieveFill(paintArray);
     if (fill.kind === "solid") {
       if (property === "background-color") {
-		 this.style += "    lv_style_set_bg_color("+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+		 this.style += "\n    lv_style_set_bg_color(&style_"+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");";
       } else if (property === "text") {
-		 this.style += "    lv_style_set_text_color("+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
+		 this.style += "\n    lv_style_set_text_color(&style_"+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");";
 	  }
     } else if (fill.kind === "gradient") {
 		
-	  this.style += "    lv_style_set_bg_grad_color("+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");\n";
-	  this.style += "    lv_style_set_bg_grad_dir("+objectName(node.id)+",LV_STATE_DEFAULT,LV_GRAD_DIR_VER);\n";
+	  this.style += "\n    lv_style_set_bg_grad_color(&style_"+objectName(node.id)+",LV_STATE_DEFAULT,"+ fill.prop + ");";
+	  this.style += "\n    lv_style_set_bg_grad_dir(&style_"+objectName(node.id)+",LV_STATE_DEFAULT,LV_GRAD_DIR_VER);";
     }
 
     return this;
@@ -121,11 +111,10 @@ export class LvglDefaultBuilder {
     return { prop: "", kind: "none" };
   };
 
-  shadow(node: AltBlendMixin): this {
+  shadow(node: AltSceneNode): this {
     const shadow = lvglShadow(node);
-    if (shadow) {
-      this.style += formatWithJSX("box-shadow", this.isJSX, lvglShadow(node));
-    }
+	this.style += shadow;
+
     return this;
   }
 
@@ -141,11 +130,11 @@ export class LvglDefaultBuilder {
       this.hasFixedSize = partial[0] !== "" && partial[1] !== "";
     }
 	if( partial[0] == ""){
-		this.style += "    lv_obj_set_height("+objectName(node.id)+","+ partial[1] + ");\n";
+		this.style += "\n    lv_obj_set_height("+objectName(node.id)+","+ partial[1] + ");";
 	} else if  (partial[1] == ""){
-		this.style += "    lv_obj_set_width("+objectName(node.id)+","+ partial[0]+ ");\n";
+		this.style += "\n    lv_obj_set_width("+objectName(node.id)+","+ partial[0]+ ");";
 	} else {
-		this.style += "    lv_obj_set_size("+objectName(node.id)+","+ partial[0] + ","+ partial[1] + ");\n";
+		this.style += "\n    lv_obj_set_size("+objectName(node.id)+","+ partial[0] + ","+ partial[1] + ");";
 	}
     return this;
   }

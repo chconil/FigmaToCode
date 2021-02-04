@@ -1,4 +1,3 @@
-import { formatWithJSX } from "./../../common/parseJSX";
 import { AltSceneNode } from "../../altNodes/altMixins";
 import { nodeWidthHeight } from "../../common/nodeWidthHeight";
 

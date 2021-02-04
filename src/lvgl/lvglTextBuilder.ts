@@ -1,9 +1,8 @@
 import { commonLineHeight } from "../common/commonTextHeightSpacing";
-import { lvglTextSize as lvglTextSizeBox } from "./builderImpl/lvglTextSize";
+import { nodeWidthHeight } from "../common/nodeWidthHeight";
 import { AltTextNode } from "../altNodes/altMixins";
 import { LvglDefaultBuilder } from "./lvglDefaultBuilder";
 import { commonLetterSpacing } from "../common/commonTextHeightSpacing";
-import { formatWithJSX } from "../common/parseJSX";
 import { convertFontWeight } from "../common/convertFontWeight";
 import { objectName } from "./builderImpl/lvglObjectName";
 export class LvglTextBuilder extends LvglDefaultBuilder {
@@ -18,44 +17,55 @@ export class LvglTextBuilder extends LvglDefaultBuilder {
       this.hasFixedSize = true;
     }
 	var myStyle=""
+	
+    const sizeResult = nodeWidthHeight(node, false);
+    if (sizeResult.width && node.textAutoResize !== "WIDTH_AND_HEIGHT") {
+      if (typeof sizeResult.width === "number") {
+		this.style  += "\n    lv_obj_set_width("+objectName(node.id)+","+ sizeResult.width+ ");";
 
-    myStyle += lvglTextSizeBox(node, this.isJSX);
-
-    if (node.fontSize !== figma.mixed) {
-      myStyle += "\n    lv_style_set_text_font(&style_font_"+objectName(node.id)+", LV_STATE_DEFAULT, &lv_font_montserrat_"+node.fontSize+");"
+      }
     }
 
-    if (node.fontName !== figma.mixed) {
+    if (sizeResult.height && node.textAutoResize === "NONE") {
+      if (typeof sizeResult.height === "number") {
+		this.style  += "\n    lv_obj_set_height("+objectName(node.id)+","+ sizeResult.height+ ");";
+      }
+    }
+      var font_extra = "";
+    if (node.fontName !== figma.mixed)  {
       const lowercaseStyle = node.fontName.style.toLowerCase();
 
       if (lowercaseStyle.match("italic")) {
-        myStyle += formatWithJSX("font-style", this.isJSX, "italic");
+        font_extra = "_italic";
       }
 
       if (!lowercaseStyle.match("regular")) {
-
-
 		  const value = node.fontName.style
 			.replace("italic", "")
 			.replace(" ", "")
 			.toLowerCase();
 
 		  const weight = convertFontWeight(value);
-
 		  if (weight !== null && weight !== "400") {
-			myStyle += formatWithJSX("font-weight", this.isJSX, weight);
+	         font_extra +="_weight"+weight;
 		  }
 	  }
-    }
-	
+	}
+	if (node.fontSize !== figma.mixed){
+	  myStyle += "\n    lv_style_set_text_font(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, &lv_font_montserrat_"+node.fontSize+font_extra+");"
+    } else {
+      myStyle += "\n    lv_style_set_text_font(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, &lv_font_montserrat_STANDARD"+font_extra+");"
+	}
+
     const letterSpacing = commonLetterSpacing(node);
     if (letterSpacing > 0) {
-      myStyle += formatWithJSX("letter-spacing", this.isJSX, letterSpacing);
+	  myStyle += "\n    lv_style_set_value_letter_space(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, "+letterSpacing+");";
     }
 
     const lineHeight = commonLineHeight(node);
     if (lineHeight > 0) {
-      myStyle += formatWithJSX("line-height", this.isJSX, lineHeight);
+	  myStyle += "\n    lv_style_set_value_line_space(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, "+lineHeight+"); //Warning: probably wrong ";
+
     }
 
 
@@ -66,37 +76,26 @@ export class LvglTextBuilder extends LvglDefaultBuilder {
       // todo when node.textAutoResize === "WIDTH_AND_HEIGHT" and there is no \n in the text, this can be ignored.
       switch (node.textAlignHorizontal) {
         case "CENTER":
-          myStyle += formatWithJSX("text-align", this.isJSX, "center");
+	      myStyle += "\n    lv_style_set_value_align(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, LV_ALIGN_CENTER);";
           break;
         case "RIGHT":
-          myStyle += formatWithJSX("text-align", this.isJSX, "right");
+	      myStyle += "\n    lv_style_set_value_align(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, LV_ALIGN_RIGHT);";
           break;
         case "JUSTIFIED":
-          myStyle += formatWithJSX("text-align", this.isJSX, "justify");
+	      myStyle += "\n    lv_style_set_value_align(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, LV_ALIGN_JUSTIFIED);";
           break;
       }
     }
 
 
-    if (node.textCase === "LOWER") {
-      myStyle += formatWithJSX("text-transform", this.isJSX, "lowercase");
-    } else if (node.textCase === "TITLE") {
-      myStyle += formatWithJSX("text-transform", this.isJSX, "capitalize");
-    } else if (node.textCase === "UPPER") {
-      myStyle += formatWithJSX("text-transform", this.isJSX, "uppercase");
-    } else if (node.textCase === "ORIGINAL") {
-      // default, ignore
-    }
-
-
     if (node.textDecoration === "UNDERLINE") {
-      myStyle += formatWithJSX("text-decoration", this.isJSX, "underline");
+		myStyle += "\n    lv_style_set_text_decor(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, LV_TEXT_DECOR_UNDERLINE);"
     } else if (node.textDecoration === "STRIKETHROUGH") {
-      myStyle += formatWithJSX(        "text-decoration",        this.isJSX,        "line-through"      );
+		myStyle += "\n    lv_style_set_text_decor(&style_"+objectName(node.id)+", LV_STATE_DEFAULT, LV_TEXT_DECOR_STRIKETHROUGH);"
     }
 	
 	if(myStyle != ""){
-		  this.style =  this.style +  "\n    static lv_style_t style_font_"+objectName(node.id)+";" + myStyle;
+		  this.style =  this.style +  "\n    static lv_style_t style_"+objectName(node.id)+";" + myStyle;
 	}	
 
     return this;

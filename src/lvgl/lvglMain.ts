@@ -9,7 +9,6 @@ import {
 import { LvglTextBuilder } from "./lvglTextBuilder";
 import { objectName } from "./builderImpl/lvglObjectName";
 import { LvglDefaultBuilder as LvglDefaultBuilder } from "./lvglDefaultBuilder";
-import { formatWithJSX } from "../common/parseJSX";
 
 let parentId = "";
 
@@ -84,8 +83,7 @@ const lvglGroup = (node: AltGroupNode, isJsx: boolean = false): string => {
     .position(node, parentId);
 
   if (builder.style) {
-    const attr = builder.build(formatWithJSX("position", isJsx, "relative"));
-    return "\nlv_obj_t *" +objectName(node.id) + "=lv_obj_create_A("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + attr+ " \n My childrens:\n " + lvglWidgetGenerator(node.children, isJsx) + "FINNNNN";
+    return "\nlv_obj_t *" +objectName(node.id) + "=lv_obj_create_A("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + " \n My childrens:\n " + lvglWidgetGenerator(node.children, isJsx) + "FINNNNN";
   }
 
   return lvglWidgetGenerator(node.children, isJsx);
@@ -144,7 +142,7 @@ const lvglFrame = (node: AltFrameNode, isJsx: boolean = false): string => {
     return lvglContainer(
       node,
       childrenStr,
-      formatWithJSX("position", isJsx, "relative"),
+      "",
       isJsx
     );
   }
@@ -260,9 +258,9 @@ const addSpacingIfNeeded = (
       const wh = node.parent.layoutMode === "HORIZONTAL" ? "width" : "height";
 
       // don't show the layer name in these separators.
-      const style = new LvglDefaultBuilder(node, false, isJsx).build(
-        formatWithJSX(wh, isJsx, node.parent.itemSpacing)
-      );
+      var style = new LvglDefaultBuilder(node, false, isJsx).build("");
+	  style+="\n    lv_obj_set_"+wh+"("+objectName(node.id)+","+ node.parent.itemSpacing+ "); // Spacing !";
+
 	  return "\nlv_obj_t * " +objectName(node.id) + "=lv_obj_create_C("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + style + "FINNNNN";
  
     }
