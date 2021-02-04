@@ -155,7 +155,10 @@ export class LvglDefaultBuilder {
     this.style += additionalStyle;
     this.removeTrailingSpace();
 	if(this.style.includes("style_")){
-		this.style="\n    static lv_style_t style_"+objectName(node.id)+";"+this.style;
+		this.style="\nlv_style_t style_"+objectName(node.id)+";"+
+		"\n    lv_style_init(&style_"+objectName(node.id)+");"+this.style+
+		"\n    lv_obj_reset_style_list("+objectName(node.id)+", LV_BTN_PART_MAIN);"+         
+		"\n    lv_obj_add_style("+objectName(node.id)+", LV_BTN_PART_MAIN, &style_"+objectName(node.id)+");";
 	}
     if (this.name.length > 0) {
       const classOrClassName = this.isJSX ? "className" : "class";

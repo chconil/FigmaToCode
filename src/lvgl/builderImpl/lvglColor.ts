@@ -32,7 +32,7 @@ export const lvglColor = (color: RGB, alpha: number = 1): string => {
     return "LV_COLOR_BLACK";
   }
 
-  return "LV_COLOR_RGBA_${r}_${g}_${b}_${a}";
+  return "LV_COLOR_RGBA_"+r+"_"+g+"_"+b+"_"+a;
 };
 
 export const lvglGradientFromFills = (

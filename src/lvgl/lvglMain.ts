@@ -83,7 +83,7 @@ const lvglGroup = (node: AltGroupNode, isJsx: boolean = false): string => {
     .position(node, parentId);
 
   if (builder.style) {
-    return "\nlv_obj_t *" +objectName(node.id) + "=lv_obj_create_A("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + " \n My childrens:\n " + lvglWidgetGenerator(node.children, isJsx) + "FINNNNN";
+    return "\nlv_obj_t *" +objectName(node.id) + "=lv_obj_create_A("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + lvglWidgetGenerator(node.children, isJsx) ;
   }
 
   return lvglWidgetGenerator(node.children, isJsx);
@@ -107,7 +107,9 @@ const lvglText = (
     return [builderResult.style, node.characters];
   } else {
 	  
-	return "\n     lv_label_set_text("+objectName(node.id)+",\""+node.characters+"\");" + builderResult.build(node,"");
+	return "\nlv_obj_t * " +objectName(node.id) + " = lv_label_create("+
+	(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);" +
+	"\n    lv_label_set_text("+objectName(node.id)+",\""+node.characters+"\");" + builderResult.build(node,"");
   }
 };
 
@@ -255,9 +257,8 @@ const addSpacingIfNeeded = (
 
       // don't show the layer name in these separators.
       var style = new LvglDefaultBuilder(node, false, isJsx).build(node,"");
-	  style+="\n    lv_obj_set_"+wh+"("+objectName(node.id)+","+ node.parent.itemSpacing+ "); // Spacing object?";
-
-	  return "\nlv_obj_t * " +objectName(node.id) + "=lv_obj_create_C("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);\n" + style;
+	  style=style+"\n    lv_obj_set_"+wh+"("+objectName(node.id)+","+ node.parent.itemSpacing+ ");\n";
+	  return "\n// Spacing object \nlv_obj_t * " +objectName(node.id) + "=lv_obj_create_C("+(node.parent?objectName(node.parent.id):"lv_scr_act()")+",NULL);" + style;
  
     }
   }
